@@ -35,7 +35,6 @@ const spanRangeValue = document.querySelector('.rollback .range-value');
 // ????Получить все инпуты с классом total-input справа через метод getElementsByClassName. (класс total-input, получить именно элементы, а не коллекции)
 const inputsTotalInput = document.getElementsByClassName('total-input');
 
-// console.log(spanRangeValue);
 
 // Получить все блоки с классом screen в изменяемую переменную ( let ) через метод querySelectorAll (далее мы будем переопределять ее значение) 
 let blockScreen = document.querySelectorAll('.screen');
