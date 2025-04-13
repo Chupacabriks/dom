@@ -6,20 +6,17 @@
 // Получить заголовок "Калькулятор верстки" через метод getElementsByTagName. (тэг h1, получить именно элемент, а не коллекцию)
 const header = document.getElementsByTagName('h1')[0];
 // console.log(header.textContent);
-
+// Получить кнопку "+" под выпадающим списком через метод querySelector. (класс screen-btn)
+const buttonPlus = document.querySelector('.screen-btn');
 // Получить кнопки "Рассчитать" и "Сброс" через метод getElementsByClassName. (класс handler_btn)
 const buttonCalculateAndReset = document.getElementsByClassName('handler_btn');
 // console.log(buttonCalculateAndReset);
-
-
-// Получить кнопку "+" под выпадающим списком через метод querySelector. (класс screen-btn)
-const buttonPlus = document.querySelector('.screen-btn');
 // console.log(buttonPlus);
-
-
 // Получить все элементы с классом  в две разные переменные. В первую элементы у которых так же присутствует класс percent, во вторую элементы у которых так же присутствует класс number через метод querySelectorAll.
 const otherItems1 = document.querySelectorAll('.other-items.percent');
 const otherItems2 = document.querySelectorAll('.other-items.number');
+
+
 // console.log(otherItems1);
 // console.log(otherItems2);
 
@@ -33,7 +30,11 @@ const spanRangeValue = document.querySelector('.rollback .range-value');
 // console.log(spanRangeValue);
 
 // ????Получить все инпуты с классом total-input справа через метод getElementsByClassName. (класс total-input, получить именно элементы, а не коллекции)
-const inputsTotalInput = document.getElementsByClassName('total-input');
+const inputsTotalInput0 = document.getElementsByClassName('total-input')[0];
+const inputsTotalInput1 = document.getElementsByClassName('total-input')[1];
+const inputsTotalInput2 = document.getElementsByClassName('total-input')[2];
+const inputsTotalInput3 = document.getElementsByClassName('total-input')[3];
+const inputsTotalInput4 = document.getElementsByClassName('total-input')[4];
 
 
 // Получить все блоки с классом screen в изменяемую переменную ( let ) через метод querySelectorAll (далее мы будем переопределять ее значение) 
