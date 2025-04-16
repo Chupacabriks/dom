@@ -2,42 +2,21 @@
 
 
 
-// Задение на DOM Урок 9
-// Получить заголовок "Калькулятор верстки" через метод getElementsByTagName. (тэг h1, получить именно элемент, а не коллекцию)
-const header = document.getElementsByTagName('h1')[0];
-// console.log(header.textContent);
-// Получить кнопку "+" под выпадающим списком через метод querySelector. (класс screen-btn)
+
+
+const title = document.getElementsByTagName('h1')[0];
 const buttonPlus = document.querySelector('.screen-btn');
-// Получить кнопки "Рассчитать" и "Сброс" через метод getElementsByClassName. (класс handler_btn)
-const buttonCalculateAndReset = document.getElementsByClassName('handler_btn');
-// console.log(buttonCalculateAndReset);
-// console.log(buttonPlus);
-// Получить все элементы с классом  в две разные переменные. В первую элементы у которых так же присутствует класс percent, во вторую элементы у которых так же присутствует класс number через метод querySelectorAll.
-const otherItems1 = document.querySelectorAll('.other-items.percent');
-const otherItems2 = document.querySelectorAll('.other-items.number');
-
-
-// console.log(otherItems1);
-// console.log(otherItems2);
-
-// Получить input type=range через его родителя с классом rollback одним запросом через метод querySelector.
-const typeRange = document.querySelector('.rollback input[type="range"]');
-// console.log(typeRange);
-
-
-// Получить span с классом range-value через его родителя с классом rollback одним запросом через метод querySelector.
-const spanRangeValue = document.querySelector('.rollback .range-value');
-// console.log(spanRangeValue);
-
-// ????Получить все инпуты с классом total-input справа через метод getElementsByClassName. (класс total-input, получить именно элементы, а не коллекции)
+const buttonCalculate = document.getElementsByClassName('handler_btn')[0];//рассчитать
+const buttonReset = document.getElementsByClassName('handler_btn')[1];//сброс
+const otherItemsPercent = document.querySelectorAll('.other-items.percent');
+const otherItemsNumber = document.querySelectorAll('.other-items.number');
+const typeRange = document.querySelector('.rollback input[type="range"]');//ползунок
+const spanRangeValue = document.querySelector('.rollback .range-value');//Значение
 const inputsTotalInput0 = document.getElementsByClassName('total-input')[0];
 const inputsTotalInput1 = document.getElementsByClassName('total-input')[1];
 const inputsTotalInput2 = document.getElementsByClassName('total-input')[2];
 const inputsTotalInput3 = document.getElementsByClassName('total-input')[3];
 const inputsTotalInput4 = document.getElementsByClassName('total-input')[4];
-
-
-// Получить все блоки с классом screen в изменяемую переменную ( let ) через метод querySelectorAll (далее мы будем переопределять ее значение) 
 let blockScreen = document.querySelectorAll('.screen');
 
 
@@ -49,174 +28,174 @@ const appData = {
   adaptive: true,
   screenPrice: 0,
   fullPrice: 0,
-  allServicePrices: 0,
+  servicePricesPercent: 0,
+  servicePricesNumber: 0,
   servicePercentPrice: 0,
   rollback: 10,
-  services: {}, // по-умолчанию объект{}
+  servicesPercent: {}, // по-умолчанию объект{}
+  servicesNumber: {},
   screens: [], // массив[]
 
+  init: function () {
+    appData.addTitle();
+    buttonCalculate.addEventListener('click', appData.start); //когда кликаем рассчитать, то запускается функция 
+    buttonPlus.addEventListener('click', appData.addScreenBlock);
+    appData.checkBtnSelect();
+    appData.addScreenBlockListeners();
+    typeRange.addEventListener('input', appData.logger)
+
+  },
+
+  addTitle: function () {
+    document.title = title.textContent;
+  },
+
   start: function () {
-    this.asking(),
-      this.getAllServicePrices(),
-      this.getFullPrice(),
-      this.getRollBackMessage(),
-      this.getServicePercentPrices(),
-      this.getTitle(),
-      this.logger()
+    alert('start');
+    appData.addScreens();
+    appData.addServices();
+    appData.addPrices();
+    appData.showResult();
   },
 
-  asking: function () {
-    do {
-      this.title = prompt('Как называется Ваш проект?', 'Калькулятор верстки');
-      // Удаляем пробелы в начале и конце
-      const trimTitle = this.title.trim();
-      // Проверка на отмену ввода (если пользователь нажал "Отмена")
-      if (this.title === null || trimTitle === '') {
-        alert('Проект без названия')
-        this.title = "Без названия";
-        break;
-      };
+  showResult: function () {
+    inputsTotalInput0.value = appData.screenPrice;
+    inputsTotalInput2.value = appData.servicePricesPercent + appData.servicePricesNumber;
+    inputsTotalInput3.value = appData.fullPrice;
 
-      // Проверка, что строка не состоит только из цифр
-      if (/^[\d\s]+$/.test(trimTitle)) {
-        alert('Название не может содержать только цифры');
-        continue; // Переходим к следующей итерации цикла
+  },
+
+  addScreens: function () {
+    blockScreen = document.querySelectorAll('.screen');
+    blockScreen.forEach(function (screen, index) {
+      const select = screen.querySelector('select'); //выбор не должен быть пустым
+      const input = screen.querySelector('input'); //и ввод не должен быть пустым 
+      const selectName = select.options[select.selectedIndex].textContent;
+      appData.screens.push({
+        id: index,
+        name: selectName,
+        price: +select.value * +input.value,
+        count: +input.value,
+      })
+    })
+    console.log(appData.screens);
+  },
+
+  addServices: function () {
+    otherItemsPercent.forEach(function (item) {
+
+      const check = item.querySelector('input[type = checkbox]');
+      const label = item.querySelector('label');
+      const input = item.querySelector('input[type = text]');
+      if (check.checked) {
+        appData.servicesPercent[label.textContent] = +input.value;
       }
-
-      // Если все проверки пройдены - сохраняем и выходим из цикла
-      this.title = trimTitle;
-      break;
-
-    } while (true); // Бесконечный цикл, пока не получим корректный ввод
-
-
-
-    for (let i = 0; i < 2; i++) {
-      let name;
-      do {
-        name = prompt('Какие типы экранов нужно разработать?');
-        if (name === null || name.trim() === '') {
-          alert('Введите тип экрана');
-        }
-        if (/^[\d\s]+$/.test(name.trim())) {
-          alert('Строка не может содержать только цифры');
-          continue;
-        }
-      } while (name === null || name.trim() === '' || /^[\d\s]+$/.test(name.trim()));
-
-      let price = 0;
-      do {
-        price = prompt('Сколько будет стоить данная работа?');
-        if (price !== null) {
-          price = price.trim();
-        }
-      } while (!this.isNumber(price));
-
-      this.screens.push({ id: i, name: name, price: price }); // метод.push для работы с массивами. добавляет элемент в конец массива. с помощью {} сохраняем именно объекта со свойствами id name price
     }
+    );
 
-
-    //УСЛОЖНЕННОЕ ЗАДАНИЕ
-    this.screenPrice = this.screens.reduce(function (sum, screen) {
-      return sum + Number(screen.price);
-    }, 0); //через метод .reduce выводим сумму экранов
-
-
-    for (let i = 0; i < 2; i++) {
-      let name;
-      let addService = true;//создаем новую переменную по-умолчанию тру, нужна, чтобы создать новое условие для вывода цены. если эта переменная станет фолс, то вопрос о цене не будет задан
-      do {
-        name = prompt('Какой дополнительный тип услуги нужен?');
-        if (name === null || name.trim() === '') {
-          alert('Дополнительная услуга не требуется');
-          addService = false;
-          break
-        }
-        if (/^[\d\s]+$/.test(name.trim())) {
-          alert('Строка не может содержать только цифры');
-          continue;
-        }
-      } while (/^[\d\s]+$/.test(name.trim()));
-
-      if (!addService) { //в этом случае переменная не равна тру, т е мы пропускаем вопрос о цене
-        continue;
+    otherItemsNumber.forEach(function (item) {
+      const check = item.querySelector('input[type = checkbox]');
+      const label = item.querySelector('label');
+      const input = item.querySelector('input[type = text]');
+      if (check.checked) {
+        appData.servicesNumber[label.textContent] = +input.value;
       }
+    }
+    );
+
+  },
+
+  //добавление нового блока для выбора экранов
+  addScreenBlock: function () {
+    const cloneScreen = blockScreen[0].cloneNode(true);
+    const lastScreen = blockScreen[blockScreen.length - 1];
+    lastScreen.after(cloneScreen);
+    blockScreen = document.querySelectorAll('.screen');
+    cloneScreen.querySelector('select').value = '';
+    cloneScreen.querySelector('input').value = '';
+
+    //делаем проверку для каждого добоавленного блока
+    const select = cloneScreen.querySelector('select');
+    const input = cloneScreen.querySelector('input');
+    select.addEventListener('change', appData.checkBtnSelect);
+    input.addEventListener('input', appData.checkBtnSelect);
+
+    appData.checkBtnSelect();
+  },
 
 
-      let price = 0;
 
-      do {
-        price = prompt('Сколько это будет стоить?');
-        if (price === null || price.trim() === '') {
-          price = 0;
-          break;
-        }
-        price = price.trim();
-      } while (!this.isNumber(price));
-
-
-      //УСЛОЖНЕННОЕ ЗАДАНИЕ
-      let key = name;//создаем переменную key, которая содержит название, т е ответ на вопрос о типе услуг
-      let counter = 1; //создаем переменную , содержащую окончание. по-умолчанию 1 
-      while (this.services.hasOwnProperty(key)) { //цикл проверяет есть ли уже в this.servicess ключ name, который ввел пользователь. если меод hasOwnProperty находит совпадение, то ключ меняется на - название + каунт, который увеличивается каждый раз на единицу ++
-        key = `${name}_${counter}`;
-        counter++;
+  checkBtnSelect: function () {
+    blockScreen = document.querySelectorAll('.screen'); //обновляем состояние введенных элементов на момент функции
+    let allScreensValid = true; //создаем переменную, со значением тру. по-умолчанию мы считаем, что пользователь все поля заполнил
+    blockScreen.forEach(function (screen) {
+      const select = screen.querySelector('select');
+      const input = screen.querySelector('input');
+      //ставим условие с проверкой для каждого блока , если не заполнено поле с выбором экрана или не введено их количество, то переменная меняет свое значение на фолс
+      if (!select.value || !input.value) {
+        allScreensValid = false;
       }
+    });
+    buttonCalculate.disabled = !allScreensValid;
 
-      this.services[name] = +price; //если проверка на число и на пустую строку или отмену пройдена в do while, то значение сохраняется в объекте this.services с ключом name. например, this.services = {"дизайн": 1000}. но, если оба раза в типе услуг записать одно и то же значение, то сохранится только одно - последнее.
+    //чтобы пользователю было понятнее - меняем цвет кнопки на серый и меняем курсор, если кнопка деактивирована
+    if (allScreensValid === false) {
+      buttonCalculate.style.backgroundColor = 'grey';
+      buttonCalculate.style.cursor = 'not-allowed';
+    } else { //если кнопка активна, то все оставляем 
+      buttonCalculate.style.backgroundColor = '#A52A2A';
+      buttonCalculate.style.cursor = 'pointer';
     }
 
-    this.adaptive = confirm('Нужен ли адаптив на сайте?');
-
   },
 
-  //проверка числа
-  isNumber: function (num) {
-    return !isNaN(parseFloat(num)) && isFinite(num);
+
+  //отслеживаем изменения полей 
+  addScreenBlockListeners: function () {
+    blockScreen.forEach(function (screen) {
+      const select = screen.querySelector('select');
+      const input = screen.querySelector('input');
+
+      select.addEventListener('change', function () {
+        appData.checkBtnSelect();
+      });
+      input.addEventListener('input', function () {
+        appData.checkBtnSelect();
+      });
+    });
   },
 
-  getTitle: function () {
-    this.title = this.title.trim()[0].toUpperCase() + this.title.trim().slice(1).toLowerCase();
+  //ползунок-определяем новую перменуую value , со значением события. обозначаем текстовое содержимое спана значением value. сохраняем полученное значение в виде числа в переменную rollback
+  logger: function (event) {
+    const value = event.target.value;
+    spanRangeValue.textContent = value;
+    appData.rollback = +value;
   },
 
-  getAllServicePrices: function () {
-    this.allServicePrices = 0;
-    for (let key in this.services) {
-      this.allServicePrices += this.services[key]
+
+
+  addPrices: function () {
+    let totalScreenCount = 0;//создали новую перменную, которая подразумевает количество экранов ВСЕГО
+    for (let screen of appData.screens) { //с помощью FOR OF мы перебираем массив appData.screens (за массив мы его приняли в самом начале дав ему [] ),  и в нашу новую переменную заносим значение из показателя count внутри screen
+      appData.screenPrice += +screen.price;
+      totalScreenCount += screen.count;
     }
-  },
+    inputsTotalInput1.value = totalScreenCount;
 
-  getFullPrice: function () {
-    this.fullPrice = +this.screenPrice + this.allServicePrices;
-  },
-
-  getServicePercentPrices: function () {
-    this.servicePercentPrice = this.fullPrice - (this.fullPrice * (this.rollback / 100));
-  },
-
-  getRollBackMessage: function (price) {
-    if (price >= 30000) {
-      return 'Даем скидку в 10%'
-    } else if (price >= 15000 && price < 30000) {
-      return 'Даем скидку в 5%'
-    } else if (price < 15000 && price >= 0) {
-      return 'Скидка не предусмотрена'
-    } else if (price < 0) {
-      return 'Что-то пошло не так'
+    for (let key in appData.servicesNumber) {
+      appData.servicePricesNumber += appData.servicesNumber[key]
     }
+    for (let key in appData.servicesPercent) {
+      appData.servicePricesPercent += (appData.screenPrice * (appData.servicesPercent[key] / 100))
+    }
+
+    appData.fullPrice = +appData.screenPrice + appData.servicePricesPercent + appData.servicePricesNumber;
+
+    inputsTotalInput4.value = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100));
   },
+}
 
-  logger: function () {
-    console.log(this.getRollBackMessage(this.fullPrice)); //скидка пользователю 
-    console.log('Итоговая стоимость: ' + this.servicePercentPrice);//итоговая стоимость
-    console.log(this.screens);
-    console.log('Общая стоимость экранов:' + this.screenPrice);
 
-    // for (let key in this) {
-    //   console.log("Ключ:" + key + "Значение:" + this[key])
-    // }
-  }
-};
 
-appData.start();
+appData.init();
 
