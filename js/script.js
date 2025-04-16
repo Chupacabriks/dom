@@ -31,7 +31,7 @@ const appData = {
   servicePricesPercent: 0,
   servicePricesNumber: 0,
   servicePercentPrice: 0,
-  rollback: 10,
+  rollback: 0,
   servicesPercent: {}, // по-умолчанию объект{}
   servicesNumber: {},
   screens: [], // массив[]
@@ -51,7 +51,16 @@ const appData = {
   },
 
   start: function () {
-    alert('start');
+    appData.screens = [],
+      appData.servicesPercent = {};
+    appData.servicesNumber = {};
+    appData.screenPrice = 0;
+    appData.fullPrice = 0;
+    appData.servicePricesPercent = 0;
+    appData.servicePricesNumber = 0;
+    appData.servicePercentPrice = 0;
+
+
     appData.addScreens();
     appData.addServices();
     appData.addPrices();
@@ -185,6 +194,7 @@ const appData = {
     for (let key in appData.servicesNumber) {
       appData.servicePricesNumber += appData.servicesNumber[key]
     }
+
     for (let key in appData.servicesPercent) {
       appData.servicePricesPercent += (appData.screenPrice * (appData.servicesPercent[key] / 100))
     }
