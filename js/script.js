@@ -37,12 +37,12 @@ const appData = {
   screens: [], // массив[]
 
   init: function () {
-    appData.addTitle();
-    buttonCalculate.addEventListener('click', appData.start); //когда кликаем рассчитать, то запускается функция 
-    buttonPlus.addEventListener('click', appData.addScreenBlock);
-    appData.checkBtnSelect();
-    appData.addScreenBlockListeners();
-    typeRange.addEventListener('input', appData.logger)
+    this.addTitle();
+    buttonCalculate.addEventListener('click', this.start); //когда кликаем рассчитать, то запускается функция 
+    buttonPlus.addEventListener('click', this.addScreenBlock);
+    this.checkBtnSelect();
+    this.addScreenBlockListeners();
+    typeRange.addEventListener('input', this.logger)
 
   },
 
@@ -58,56 +58,54 @@ const appData = {
     appData.fullPrice = 0;
     appData.servicePricesPercent = 0;
     appData.servicePricesNumber = 0;
-    appData.servicePercentPrice = 0;
-
+    appData.servicePercentPrice = 0;//нельзя в this
 
     appData.addScreens();
     appData.addServices();
     appData.addPrices();
-    appData.showResult();
+    appData.showResult();//нельзя в this
   },
 
   showResult: function () {
-    inputsTotalInput0.value = appData.screenPrice;
-    inputsTotalInput2.value = appData.servicePricesPercent + appData.servicePricesNumber;
-    inputsTotalInput3.value = appData.fullPrice;
+    inputsTotalInput0.value = this.screenPrice;
+    inputsTotalInput2.value = this.servicePricesPercent + this.servicePricesNumber;
+    inputsTotalInput3.value = this.fullPrice;
 
   },
 
   addScreens: function () {
     blockScreen = document.querySelectorAll('.screen');
-    blockScreen.forEach(function (screen, index) {
+    blockScreen.forEach((screen, index) => {
       const select = screen.querySelector('select'); //выбор не должен быть пустым
       const input = screen.querySelector('input'); //и ввод не должен быть пустым 
       const selectName = select.options[select.selectedIndex].textContent;
-      appData.screens.push({
+      this.screens.push({
         id: index,
         name: selectName,
         price: +select.value * +input.value,
         count: +input.value,
       })
     })
-    console.log(appData.screens);
   },
 
   addServices: function () {
-    otherItemsPercent.forEach(function (item) {
+    otherItemsPercent.forEach((item) => {
 
       const check = item.querySelector('input[type = checkbox]');
       const label = item.querySelector('label');
       const input = item.querySelector('input[type = text]');
       if (check.checked) {
-        appData.servicesPercent[label.textContent] = +input.value;
+        this.servicesPercent[label.textContent] = +input.value;
       }
     }
     );
 
-    otherItemsNumber.forEach(function (item) {
+    otherItemsNumber.forEach((item) => {
       const check = item.querySelector('input[type = checkbox]');
       const label = item.querySelector('label');
       const input = item.querySelector('input[type = text]');
       if (check.checked) {
-        appData.servicesNumber[label.textContent] = +input.value;
+        this.servicesNumber[label.textContent] = +input.value;
       }
     }
     );
@@ -126,10 +124,10 @@ const appData = {
     //делаем проверку для каждого добоавленного блока
     const select = cloneScreen.querySelector('select');
     const input = cloneScreen.querySelector('input');
-    select.addEventListener('change', appData.checkBtnSelect);
-    input.addEventListener('input', appData.checkBtnSelect);
+    select.addEventListener('change', appData.checkBtnSelect);//нельзя ментья на this
+    input.addEventListener('input', appData.checkBtnSelect);//нельзя ментья на this
 
-    appData.checkBtnSelect();
+    appData.checkBtnSelect();//нельзя ментья на this, т к addscreenblock прослушивается
   },
 
 
@@ -137,7 +135,7 @@ const appData = {
   checkBtnSelect: function () {
     blockScreen = document.querySelectorAll('.screen'); //обновляем состояние введенных элементов на момент функции
     let allScreensValid = true; //создаем переменную, со значением тру. по-умолчанию мы считаем, что пользователь все поля заполнил
-    blockScreen.forEach(function (screen) {
+    blockScreen.forEach((screen) => {
       const select = screen.querySelector('select');
       const input = screen.querySelector('input');
       //ставим условие с проверкой для каждого блока , если не заполнено поле с выбором экрана или не введено их количество, то переменная меняет свое значение на фолс
@@ -161,49 +159,49 @@ const appData = {
 
   //отслеживаем изменения полей 
   addScreenBlockListeners: function () {
-    blockScreen.forEach(function (screen) {
+    blockScreen.forEach((screen) => {
       const select = screen.querySelector('select');
       const input = screen.querySelector('input');
 
-      select.addEventListener('change', function () {
+      select.addEventListener('change', () => {
         appData.checkBtnSelect();
       });
-      input.addEventListener('input', function () {
+      input.addEventListener('input', () => {
         appData.checkBtnSelect();
       });
-    });
+    });//нельзя менять appdata на this, т к стрелочная функция
   },
 
   //ползунок-определяем новую перменуую value , со значением события. обозначаем текстовое содержимое спана значением value. сохраняем полученное значение в виде числа в переменную rollback
   logger: function (event) {
     const value = event.target.value;
     spanRangeValue.textContent = value;
-    appData.rollback = +value;
+    appData.rollback = +value;//нельзя менять на this, т к есть прослушка у logger
   },
 
 
-
+  //можем заменить на this, так как addPrices вызывактся черзе appdata, нет стерлочной функции, нет прослушки
   addPrices: function () {
     let totalScreenCount = 0;//создали новую перменную, которая подразумевает количество экранов ВСЕГО
-    for (let screen of appData.screens) { //с помощью FOR OF мы перебираем массив appData.screens (за массив мы его приняли в самом начале дав ему [] ),  и в нашу новую переменную заносим значение из показателя count внутри screen
-      appData.screenPrice += +screen.price;
+    for (let screen of this.screens) { //с помощью FOR OF мы перебираем массив appData.screens (за массив мы его приняли в самом начале дав ему [] ),  и в нашу новую переменную заносим значение из показателя count внутри screen
+      this.screenPrice += +screen.price;
       totalScreenCount += screen.count;
     }
     inputsTotalInput1.value = totalScreenCount;
 
-    for (let key in appData.servicesNumber) {
-      appData.servicePricesNumber += appData.servicesNumber[key]
+    for (let key in this.servicesNumber) {
+      this.servicePricesNumber += this.servicesNumber[key]
     }
 
-    for (let key in appData.servicesPercent) {
-      appData.servicePricesPercent += (appData.screenPrice * (appData.servicesPercent[key] / 100))
+    for (let key in this.servicesPercent) {
+      this.servicePricesPercent += (this.screenPrice * (this.servicesPercent[key] / 100))
     }
 
-    appData.fullPrice = +appData.screenPrice + appData.servicePricesPercent + appData.servicePricesNumber;
+    this.fullPrice = +this.screenPrice + this.servicePricesPercent + this.servicePricesNumber;
 
-    inputsTotalInput4.value = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100));
-  },
-}
+    inputsTotalInput4.value = this.fullPrice - (this.fullPrice * (this.rollback / 100));
+  },//можно менять appdata на this, т к нет стрелочной функции, нет прослушки, addprice ссылается на appdata
+};
 
 
 
