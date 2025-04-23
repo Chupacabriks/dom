@@ -12,11 +12,11 @@ const otherItemsPercent = document.querySelectorAll('.other-items.percent');
 const otherItemsNumber = document.querySelectorAll('.other-items.number');
 const typeRange = document.querySelector('.rollback input[type="range"]');//ползунок
 const spanRangeValue = document.querySelector('.rollback .range-value');//Значение
-const inputsTotalInput0 = document.getElementsByClassName('total-input')[0];
-const inputsTotalInput1 = document.getElementsByClassName('total-input')[1];
-const inputsTotalInput2 = document.getElementsByClassName('total-input')[2];
-const inputsTotalInput3 = document.getElementsByClassName('total-input')[3];
-const inputsTotalInput4 = document.getElementsByClassName('total-input')[4];
+let inputsTotalInput0 = document.getElementsByClassName('total-input')[0];
+let inputsTotalInput1 = document.getElementsByClassName('total-input')[1];
+let inputsTotalInput2 = document.getElementsByClassName('total-input')[2];
+let inputsTotalInput3 = document.getElementsByClassName('total-input')[3];
+let inputsTotalInput4 = document.getElementsByClassName('total-input')[4];
 let blockScreen = document.querySelectorAll('.screen');
 
 
@@ -42,7 +42,9 @@ const appData = {
     buttonPlus.addEventListener('click', this.addScreenBlock);
     this.checkBtnSelect();
     this.addScreenBlockListeners();
-    typeRange.addEventListener('input', this.logger)
+    typeRange.addEventListener('input', this.logger);
+    this.btnReplace(false);//при запуске функция имеет значение ложь, т е кнопка не меняется. остается рассчитать
+    buttonReset.addEventListener('click', () => this.reset());
 
   },
 
@@ -51,6 +53,7 @@ const appData = {
   },
 
   start: function () {
+
     appData.screens = [],
       appData.servicesPercent = {};
     appData.servicesNumber = {};
@@ -64,6 +67,8 @@ const appData = {
     appData.addServices();
     appData.addPrices();
     appData.showResult();//нельзя в this
+    appData.blockAll();//ф для блока ввода
+    appData.btnReplace(true);//после рассчетов значение тру - замена кнопки
   },
 
   showResult: function () {
@@ -91,7 +96,7 @@ const appData = {
   addServices: function () {
     otherItemsPercent.forEach((item) => {
 
-      const check = item.querySelector('input[type = checkbox]');
+      const check = item.querySelector('input[type = checkbox]'); //кнопка на галочку в допах 
       const label = item.querySelector('label');
       const input = item.querySelector('input[type = text]');
       if (check.checked) {
@@ -111,6 +116,24 @@ const appData = {
     );
 
   },
+
+  //функция для блока всех способов введения информации (14 задание)
+  blockAll: function () {
+    const allTextInputs = document.querySelectorAll("input[type='text'], select");
+    allTextInputs.forEach(input => {
+      input.disabled = true;
+    });
+
+    const allCheckBoxes = document.querySelectorAll("input[type='checkbox']");
+    allCheckBoxes.forEach(checkbox => {
+      checkbox.disabled = true;
+    });
+
+    typeRange.disabled = true;
+    buttonPlus.disabled = true;
+  },
+
+
 
   //добавление нового блока для выбора экранов
   addScreenBlock: function () {
@@ -154,6 +177,68 @@ const appData = {
       buttonCalculate.style.cursor = 'pointer';
     }
 
+  },
+
+  //функция на замену кнопки рассчитать - сброс (14 задание)
+  btnReplace: function (showReset) {
+    if (showReset) {
+      buttonCalculate.style.display = 'none';
+      buttonReset.style.display = 'block';
+      buttonPlus.disabled = true;
+    } else {
+      buttonCalculate.style.display = 'block';
+      buttonReset.style.display = 'none';
+      buttonPlus.disabled = false;
+    };
+  }, //по-умолчанию значение ложь
+
+
+  //что делает кнопка сброс (отменяет недоступность кнопок,  )
+  reset: function () {
+    appData.screenPrice = 0;
+    appData.fullPrice = 0;
+    appData.servicePricesPercent = 0;
+    appData.servicePricesNumber = 0;
+    appData.servicePercentPrice = 0;
+    appData.screens = [],
+      appData.servicesPercent = {};
+    appData.servicesNumber = {};
+
+    const screens = document.querySelectorAll('.screen');
+    for (let i = 1;
+      i < screens.length;
+      i++) {
+      screens[i].remove();
+    };
+
+    const firstScreen = document.querySelector('.screen');
+    firstScreen.querySelector('select').value = '';
+    firstScreen.querySelector('input').value = '';
+
+    blockScreen = document.querySelectorAll('.screen');
+    blockScreen.forEach((screen) => {
+      const select = screen.querySelector('select');
+      const input = screen.querySelector('input');
+      input.disabled = false;
+      select.disabled = false;
+    });
+
+    const allCheckboxes = document.querySelectorAll("input[type='checkbox']");
+    allCheckboxes.forEach(checkbox => {
+      checkbox.disabled = false;//по-умолчанию все вводы разблокированы
+      checkbox.checked = false;
+    });
+
+    typeRange.value = 0; //ползунок на 0
+    spanRangeValue.textContent = '0';
+    typeRange.disabled = false;
+
+    document.querySelectorAll('.total-input').forEach(input => input.value = '');//очищаем поля сумм
+
+    buttonCalculate.style.display = 'block';
+    buttonReset.style.display = 'none';
+    buttonPlus.disabled = false;
+    this.btnReplace(false);
   },
 
 
