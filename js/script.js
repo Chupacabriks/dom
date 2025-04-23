@@ -12,11 +12,11 @@ const otherItemsPercent = document.querySelectorAll('.other-items.percent');
 const otherItemsNumber = document.querySelectorAll('.other-items.number');
 const typeRange = document.querySelector('.rollback input[type="range"]');//ползунок
 const spanRangeValue = document.querySelector('.rollback .range-value');//Значение
-let inputsTotalInput0 = document.getElementsByClassName('total-input')[0];
-let inputsTotalInput1 = document.getElementsByClassName('total-input')[1];
-let inputsTotalInput2 = document.getElementsByClassName('total-input')[2];
-let inputsTotalInput3 = document.getElementsByClassName('total-input')[3];
-let inputsTotalInput4 = document.getElementsByClassName('total-input')[4];
+const inputsTotalInput0 = document.getElementsByClassName('total-input')[0];
+const inputsTotalInput1 = document.getElementsByClassName('total-input')[1];
+const inputsTotalInput2 = document.getElementsByClassName('total-input')[2];
+const inputsTotalInput3 = document.getElementsByClassName('total-input')[3];
+const inputsTotalInput4 = document.getElementsByClassName('total-input')[4];
 let blockScreen = document.querySelectorAll('.screen');
 
 
